@@ -1,0 +1,8 @@
+numpy
+opencv-python
+Pillow
+scikit-image
+scikit-learn
+scipy
+tflite-runtime
+tqdm
