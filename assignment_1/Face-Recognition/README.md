@@ -2,9 +2,7 @@
 
 ### Prerequisites
 * Python
-* pip install opencv-contrib-python
-* pip install numpy
-* pip install pillow
+* pip install requirements.txt
 
 ### Instructions
 * run the dataSetGenerator.py and enter a unique id
