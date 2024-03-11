@@ -2,9 +2,12 @@
 
 ### Prerequisites
 * Python
-* pip install requirements.txt
+* opencv-contrib-python
+* numpy
+* pillow
 
 ### Instructions
-* run the dataSetGenerator.py and enter a unique id
-* run trainer.py
-* run detector.py
+* run dataGen.py to capture image
+* run grayscale.py to convert to grayscale image
+* run trainer.py to train images
+* run detector.py to recognise faces

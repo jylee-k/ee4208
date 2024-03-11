@@ -1,58 +1,71 @@
-# #Copyright Anirban Kar (anirbankar21@gmail.com)
-# #
-# #   Licensed under the Apache License, Version 2.0 (the "License");
-# #   you may not use this file except in compliance with the License.
-# #  You may obtain a copy of the License at
-# #
-# #       http://www.apache.org/licenses/LICENSE-2.0
-# #
-# #   Unless required by applicable law or agreed to in writing, software
-# #   distributed under the License is distributed on an "AS IS" BASIS,
-# #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# #   See the License for the specific language governing permissions and
-# #   limitations under the License.
-
-import cv2,os
+import cv2
+import os
 import numpy as np
-from PIL import Image 
+from PIL import Image
 
+# Get the directory path of the current script
 path = os.path.dirname(os.path.abspath(__file__))
+
+# Create the LBPH face recognizer
 recognizer = cv2.face.LBPHFaceRecognizer_create()
-cascadePath = path+r"\Classifiers\face.xml"
-faceCascade = cv2.CascadeClassifier(cascadePath);
-dataPath = path+r'\dataSet'
+
+# Load the face detector cascade
+cascadePath = path + r"\Classifiers\face.xml"
+faceCascade = cv2.CascadeClassifier(cascadePath)
+
+# Path to the dataset containing the images
+dataPath = path + r'\dataset\gray'
 
 def get_images_and_labels(datapath):
-     image_paths = [os.path.join(datapath, f) for f in os.listdir(datapath)]
-     # images will contains face images
-     images = []
-     # labels will contains the label that is assigned to the image
-     labels = []
-     for image_path in image_paths:
-         # Read the image and convert to grayscale
-         image_pil = Image.open(image_path).convert('L')
-         # Convert the image format into numpy array
-         image = np.array(image_pil, 'uint8')
-         # Get the label of the image
-         nbr = int(os.path.split(image_path)[1].split(".")[0].replace("face-", ""))
-         #nbr=int(''.join(str(ord(c)) for c in nbr))
-         print(nbr)
-         # Detect the face in the image
-         faces = faceCascade.detectMultiScale(image)
-         # If face is detected, append the face to images and the label to labels
-         for (x, y, w, h) in faces:
-             images.append(image[y: y + h, x: x + w])
-             labels.append(nbr)
-             cv2.imshow("Adding faces to traning set...", image[y: y + h, x: x + w])
-             cv2.waitKey(10)
-     # return the images list and labels list
-     return images, labels
+    """
+    Reads images and labels from the dataset.
 
+    Args:
+        datapath (str): Path to the dataset directory.
 
+    Returns:
+        tuple: (images, labels) where:
+            images (list): List of face images as NumPy arrays.
+            labels (list): List of corresponding labels for the images.
+    """
+
+    image_paths = [os.path.join(datapath, f) for f in os.listdir(datapath)]
+    images = []
+    labels = []
+
+    for image_path in image_paths:
+        # Read image, convert to grayscale, and create NumPy array
+        image_pil = Image.open(image_path).convert('L')
+        image = np.array(image_pil, 'uint8')
+
+        # Extract label from filename
+        label = int(os.path.split(image_path)[1].split(".")[0].replace("face", ""))
+
+        # Detect faces in the image
+        faces = faceCascade.detectMultiScale(image)
+
+        # If faces are found, process them
+        for (x, y, w, h) in faces:
+            images.append(image[y: y + h, x: x + w])
+            labels.append(label)
+            # Optional: Display the detected faces during training
+            # cv2.imshow("Adding faces to training set...", image[y: y + h, x: x + w])
+            # cv2.waitKey(10)
+
+    return images, labels
+
+# Get faces and labels from the dataset
 images, labels = get_images_and_labels(dataPath)
-cv2.imshow('test',images[0])
-cv2.waitKey(1)
 
+# Show a test image (optional)
+# cv2.imshow('test', images[0])
+# cv2.waitKey(1)
+
+# Train the recognizer
 recognizer.train(images, np.array(labels))
-recognizer.save(path+r'\trainer\trainer.yml')
+
+# Save the trained model
+recognizer.save(path + r'\trainer\trainer.yml')
+
+# Close all open windows
 cv2.destroyAllWindows()
