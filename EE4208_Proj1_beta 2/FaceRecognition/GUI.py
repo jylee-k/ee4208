@@ -1,5 +1,6 @@
 import cv2
-from FaceIDLight.tools import FaceID
+#from FaceIDLight.tools import FaceID
+from FaceRecognition.model import FaceID
 import threading, time
 import sys
 import tkinter as tk

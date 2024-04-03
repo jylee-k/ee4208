@@ -5,7 +5,8 @@ import numpy as np
 import os
 import glob
 from skimage.transform import SimilarityTransform
-from FaceIDLight.helper import get_file
+#from FaceIDLight.helper import get_file
+from FaceRecognition.model_download import get_file
 from scipy.spatial import distance
 from sklearn.metrics.pairwise import cosine_distances
 
