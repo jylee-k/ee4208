@@ -54,7 +54,7 @@ def deblur_image(image, kernel_size=(15, 15)):
     blurred = cv2.GaussianBlur(image, kernel_size, 0)
     deblurred = cv2.addWeighted(image, 1.5, blurred, -0.5, 0)
     return deblurred
-
+'''
 def deblur_images_in_folder(input_folder, output_folder):
     """
     Deblurs images in a folder by compensating for motion blur and saves them in the output folder.
@@ -86,8 +86,50 @@ def deblur_images_in_folder(input_folder, output_folder):
         
         # Save deblurred image in output folder
         cv2.imwrite(os.path.join(output_folder, f'deblurred_{i}.jpg'), deblurred)
+        '''
+def deblur_images_in_folder(input_folder, output_folder):
+    """
+    Deblurs images in a folder by compensating for motion blur and saves them in the output folder.
+    
+    Args:
+    - input_folder: Path to the folder containing input images.
+    - output_folder: Path to the folder to store deblurred images.
+    """
+    # Create output folder if it doesn't exist
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    
+    # Get list of image files in folder
+    image_files = [f for f in os.listdir(input_folder) if f.endswith(('.jpg', '.jpeg', '.png', '.bmp'))]
+    
+    for i in range(len(image_files)-1):
+        # Load consecutive images
+        image1 = cv2.imread(os.path.join(input_folder, image_files[i]))
+        image2 = cv2.imread(os.path.join(input_folder, image_files[i+1]))
+        
+        # Estimate motion between consecutive images
+        motion = estimate_motion(image1, image2)
+        
+        # Compensate for motion blur
+        motion_compensated = motion_compensation(image2, motion)
+        
+        # Deblur the compensated image
+        deblurred = deblur_image(motion_compensated)
+        
+        # Get the original image name without extension
+        original_name = os.path.splitext(image_files[i])[0]
+        
+        # Save deblurred image in output folder with original name
+        cv2.imwrite(os.path.join(output_folder, f'deblurred_{original_name}.jpg'), deblurred)
 
 # Example usage
 input_folder = 'retina2_smoothed_plus_denoise'
 output_folder = 'motion_compensation_output'
 deblur_images_in_folder(input_folder, output_folder)
+
+'''
+# Example usage
+input_folder = 'retina2_smoothed_plus_denoise'
+output_folder = 'motion_compensation_output'
+deblur_images_in_folder(input_folder, output_folder)
+'''
